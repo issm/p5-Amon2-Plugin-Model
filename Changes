@@ -1,4 +1,8 @@
 Revision history for Perl extension Amon2::Plugin::Model
 
+0.02    Sat Mar 30 19.20:00 2013
+        - if Model has method "init", it called automatically
+        - can pass parameters for "init" as HashRef
+
 0.01    Fri Dec 30 00:35:40 2011
         - original version
