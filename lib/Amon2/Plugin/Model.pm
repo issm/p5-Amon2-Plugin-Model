@@ -19,14 +19,18 @@ sub init {
 }
 
 sub _model {
-    my ($self, @names) = @_;
-    die 'Model name is not specified.'  unless @names;
+    my ($self, @args) = @_;
+    die 'Model name is not specified.'  unless ( grep ref($_) eq '', @args );
 
-    for my $name ( @names ) {
-        if ( ! defined $self->{__models}{$name} ) {
+    my @names;
+    while ( my $name = shift @args ) {
+        next if ref($name) ne '';
+        my ( $model, $params );
+        if ( @args > 0  &&  ref($args[0]) eq 'HASH' ) { $params = shift @args }
+        if ( ! defined ( $model = $self->{__models}{$name} ) ) {
             try {
                 my $model_class = sprintf '%s::%s', $self->__class_prefix, (ucfirst $name);
-                $self->{__models}{$name} = $model_class->new(
+                $model = $self->{__models}{$name} = $model_class->new(
                     c => $self,
                 );
             } catch {
@@ -34,16 +38,14 @@ sub _model {
                 die $msg;
             };
         }
+        if ( $model->can('init') ) {
+            $model->init( %$params );
+        }
+        push @names, $name;
     }
 
     return wantarray ? @{$self->{__models}}{@names} : $self->{__models}{$names[0]};
 }
-
-
-1;
-__END__
-
-
 
 1;
 __END__
