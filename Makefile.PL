@@ -1,13 +1,19 @@
-use inc::Module::Install;
-name 'Amon2-Plugin-Model';
-all_from 'lib/Amon2/Plugin/Model.pm';
+use ExtUtils::MakeMaker;
 
-# requires '';
+my @TEST_TARGET = qw{ t/*.t t/*/*.t };
 
-tests 't/*.t';
-author_tests 'xt';
-
-test_requires 'Test::More';
-auto_set_repository;
-auto_include;
-WriteAll;
+WriteMakefile(
+    NAME => 'Amon2::Plugin::Model',
+    VERSION_FROM => 'lib/Amon2/Plugin/Model.pm',
+    ABSTRACT => 'Amon2::Plugin::Model',
+    PREREQ_PM => {
+        'ExtUtils::MakeMaker' => 6.31,
+        'ExtUtils::Install'   => 1.46,
+        'Module::Find'        => 0.10,
+        'Try::Tiny'           => 0.11,
+    },
+    test => {
+        TESTS => join( ' ', @TEST_TARGET ),
+    },
+    LICENSE => 'perl',
+);
