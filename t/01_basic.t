@@ -49,7 +49,7 @@ subtest 'cache' => sub {
     $m2 = $c->model('Hoge');
     isa_ok $m1, 'Foo::Model::Hoge';
     isa_ok $m2, 'Foo::Model::Hoge';
-    is "$m2", "$m1", '$m2 is cache of $m1';
+    isnt "$m2", "$m1", '$m2 is not cache of $m1';
 
     my ($m3, $m4, $m5);
     $m3 = $c->model('Fuga');
@@ -58,8 +58,16 @@ subtest 'cache' => sub {
     isa_ok $m3, 'Foo::Model::Fuga';
     isa_ok $m4, 'Foo::Model::Hoge';
     isa_ok $m5, 'Foo::Model::Fuga';
-    is "$m4", "$m1", '$m4 is cache of $m1';
-    is "$m5", "$m3", '$m5 is cache of $m3';
+    isnt "$m4", "$m1", '$m4 is not cache of $m1';
+    isnt "$m5", "$m3", '$m5 is not cache of $m3';
+};
+
+subtest 'lower-cased name' => sub {
+    my $m;
+    $m = $c->model('hoge');
+    isa_ok $m, 'Foo::Model::Hoge';
+    $m = $c->model('piyo::bar_baz');
+    isa_ok $m, 'Foo::Model::Piyo::BarBaz';
 };
 
 done_testing;

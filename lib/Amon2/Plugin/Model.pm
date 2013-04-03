@@ -1,50 +1,60 @@
 package Amon2::Plugin::Model;
 use strict;
 use warnings;
-use Module::Find;
 use Try::Tiny;
+use Class::Load qw/load_class/;
 
 our $VERSION = '0.02';
 
 sub init {
     my ($class, $context_class, $config) = @_;
-    my ($class_prefix) = split /::/, $context_class;
-    $class_prefix .= '::Model';
-    useall $class_prefix;
 
     no strict 'refs';
-    *{"$context_class\::model"}          = \&_model;
-    *{"$context_class\::__models"}       = {};
-    *{"$context_class\::__class_prefix"} = sub { $class_prefix };
+    *{"$context_class\::model"} = \&_model;
 }
 
 sub _model {
     my ($self, @args) = @_;
     die 'Model name is not specified.'  unless ( grep ref($_) eq '', @args );
 
-    my @names;
-    while ( my $name = shift @args ) {
-        next if ref($name) ne '';
-        my ( $model, $params );
+    my $class_prefix = "@{[ref($self)]}::Model";
+
+    my @models;
+    while ( my $arg = shift @args ) {
+        next if ref($arg) ne '';
+        my ($model, $params);
+
+        # ->model( $name => \%params )
         if ( @args > 0  &&  ref($args[0]) eq 'HASH' ) { $params = shift @args }
-        if ( ! defined ( $model = $self->{__models}{$name} ) ) {
-            try {
-                my $model_class = sprintf '%s::%s', $self->__class_prefix, (ucfirst $name);
-                $model = $self->{__models}{$name} = $model_class->new(
-                    c => $self,
-                );
-            } catch {
-                my ($msg) = @_;
-                die $msg;
-            };
-        }
+        $params ||= +{};
+
+        try {
+            my $name = __camelize($arg);
+            my $model_class = load_class("$class_prefix\::$name");
+            $model = $model_class->new(
+                c => $self,
+                %$params,
+            );
+        } catch {
+            my $msg = shift;
+            die $msg;
+        };
+
         if ( $model->can('init') ) {
             $model->init( %$params );
         }
-        push @names, $name;
+
+        push @models, $model;
     }
 
-    return wantarray ? @{$self->{__models}}{@names} : $self->{__models}{$names[0]};
+    return wantarray ? @models : $models[0];
+}
+
+sub __camelize {
+    my $t = shift;
+    $t =~ s/(?:^|_)(.)/uc($1)/ge;
+    $t =~ s/:([^:])/':'.uc($1)/ge;
+    return $t;
 }
 
 1;

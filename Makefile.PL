@@ -7,10 +7,10 @@ WriteMakefile(
     VERSION_FROM => 'lib/Amon2/Plugin/Model.pm',
     ABSTRACT => 'Amon2::Plugin::Model',
     PREREQ_PM => {
-        'ExtUtils::MakeMaker' => 6.31,
-        'ExtUtils::Install'   => 1.46,
-        'Module::Find'        => 0.10,
-        'Try::Tiny'           => 0.11,
+        'ExtUtils::MakeMaker' => '6.31',
+        'ExtUtils::Install'   => '1.46',
+        'Try::Tiny'           => '0.11',
+        'Class::Load'         => '0.20',
     },
     test => {
         TESTS => join( ' ', @TEST_TARGET ),
