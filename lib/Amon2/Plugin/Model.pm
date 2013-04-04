@@ -66,15 +66,36 @@ __END__
 
 =head1 NAME
 
-Amon2::Plugin::Model -
+Amon2::Plugin::Model - model-class loader plugin for Amon2
 
 =head1 SYNOPSIS
 
-  use Amon2::Plugin::Model;
+  # your Amon2 application
+  package YourApp;
+  use parent 'Amon2';
+  ...
+
+  # your model class
+  package YourApp::Model::Foo;
+
+  sub new {
+      my ($class, %params) = @_;
+      return bless \%params, $class;
+  }
+
+  sub hello {
+      return 'hello';
+  }
+
+  # in your code
+  my $c = YourApp->bootstrap();
+  my $model = $c->model('Foo' => { foo => 1 });
+  print $model->{foo};  # 1
+  print $c->hello();    # 'hello'
 
 =head1 DESCRIPTION
 
-Amon2::Plugin::Model is
+Amon2::Plugin::Model is model-class loader plugin for Amon2.
 
 =head1 AUTHOR
 
