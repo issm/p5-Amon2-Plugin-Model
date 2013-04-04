@@ -90,11 +90,20 @@ Amon2::Plugin::Model - model-class loader plugin for Amon2
       return 'hello';
   }
 
+  sub search {
+      my $self = shift;
+      my $dbh = $self->c->dbh;
+      my $sth = $dbh->prepare_cached(...);
+      $sth->execute(...);
+      ...
+  }
+
   # in your code
   my $c = YourApp->bootstrap();
   my $model = $c->model('Foo' => { foo => 1 });
-  print $model->{foo};  # 1
-  print $c->hello();    # 'hello'
+  print $model->{foo};    # 1
+  print $model->hello();  # 'hello'
+  $model->search();
 
 =head1 DESCRIPTION
 
