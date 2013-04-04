@@ -1,5 +1,8 @@
 Revision history for Perl extension Amon2::Plugin::Model
 
+0.04    Thu Apr 04 14:15:00 2013
+        - fix backward compatibility broken in 0.03
+
 0.03    Thu Apr 04 10:02:00 2013
         - requires Class::Load, don't require Module::Find
         - can load any class with specifing modle-class like "+MyModel::Foo"
