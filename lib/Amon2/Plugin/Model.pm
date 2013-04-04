@@ -17,7 +17,8 @@ sub _model {
     my ($self, @args) = @_;
     die 'Model name is not specified.'  unless ( grep ref($_) eq '', @args );
 
-    my $class_prefix = "@{[ref($self)]}::Model";
+    my ($class_prefix) = split /::/, ref($self);
+    $class_prefix .= '::Model';
 
     my @models;
     while ( my $arg = shift @args ) {
