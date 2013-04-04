@@ -1,5 +1,11 @@
 Revision history for Perl extension Amon2::Plugin::Model
 
+0.03    Thu Apr 04 10:02:00 2013
+        - requires Class::Load, don't require Module::Find
+        - can load any class with specifing modle-class like "+MyModel::Foo"
+        - if spedified parameters, also passed to constructor "new"
+        - don't cache
+
 0.02    Sat Mar 30 19.20:00 2013
         - if Model has method "init", it called automatically
         - can pass parameters for "init" as HashRef
