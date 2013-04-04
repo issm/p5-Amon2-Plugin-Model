@@ -29,8 +29,11 @@ sub _model {
         $params ||= +{};
 
         try {
-            my $name = __camelize($arg);
-            my $model_class = load_class("$class_prefix\::$name");
+            my $model_class = __camelize($arg);
+            unless ( $model_class =~ s/^\+// || $model_class =~ /^$class_prefix/ ) {
+                $model_class = "$class_prefix\::$model_class";
+            }
+            load_class($model_class);
             $model = $model_class->new(
                 c => $self,
                 %$params,
@@ -54,6 +57,7 @@ sub __camelize {
     my $t = shift;
     $t =~ s/(?:^|_)(.)/uc($1)/ge;
     $t =~ s/:([^:])/':'.uc($1)/ge;
+    $t =~ s/^(\+.)/uc($1)/e;
     return $t;
 }
 
