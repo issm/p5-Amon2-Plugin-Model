@@ -73,6 +73,7 @@ Amon2::Plugin::Model - model-class loader plugin for Amon2
   # your Amon2 application
   package YourApp;
   use parent 'Amon2';
+  __PACKAGE__->load_plugin('Model');
   ...
 
   # your model class
