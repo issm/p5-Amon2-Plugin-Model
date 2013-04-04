@@ -79,9 +79,12 @@ Amon2::Plugin::Model - model-class loader plugin for Amon2
   package YourApp::Model::Foo;
 
   sub new {
+      # context object is passed as parameter "c"
       my ($class, %params) = @_;
       return bless \%params, $class;
   }
+
+  sub c { shift->{c} }
 
   sub hello {
       return 'hello';
