@@ -4,7 +4,7 @@ use warnings;
 use Try::Tiny;
 use Class::Load qw/load_class/;
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 sub init {
     my ($class, $context_class, $config) = @_;

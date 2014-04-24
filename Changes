@@ -1,5 +1,8 @@
 Revision history for Perl extension Amon2::Plugin::Model
 
+0.05    Thu Apr 24 13:45:00 2014
+        - plugin config "store_name" is available
+
 0.04    Thu Apr 04 14:15:00 2013
         - fix backward compatibility broken in 0.03
 
