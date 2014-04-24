@@ -10,48 +10,53 @@ sub init {
     my ($class, $context_class, $config) = @_;
 
     no strict 'refs';
-    *{"$context_class\::model"} = \&_model;
+    my $f = _generate_func( %{ $config || +{} } );
+    *{"$context_class\::model"} = $f;
 }
 
-sub _model {
-    my ($self, @args) = @_;
-    die 'Model name is not specified.'  unless ( grep ref($_) eq '', @args );
+sub _generate_func {
+    my (%config) = @_;
 
-    my ($class_prefix) = split /::/, ref($self);
-    $class_prefix .= '::Model';
+    return sub {
+        my ($self, @args) = @_;
+        die 'Model name is not specified.'  unless ( grep ref($_) eq '', @args );
 
-    my @models;
-    while ( my $arg = shift @args ) {
-        next if ref($arg) ne '';
-        my ($model, $params);
+        my ($class_prefix) = split /::/, ref($self);
+        $class_prefix .= '::Model';
 
-        # ->model( $name => \%params )
-        if ( @args > 0  &&  ref($args[0]) eq 'HASH' ) { $params = shift @args }
-        $params ||= +{};
+        my @models;
+        while ( my $arg = shift @args ) {
+            next if ref($arg) ne '';
+            my ($model, $params);
 
-        try {
-            my $model_class = __camelize($arg);
-            unless ( $model_class =~ s/^\+// || $model_class =~ /^$class_prefix/ ) {
-                $model_class = "$class_prefix\::$model_class";
+            # ->model( $name => \%params )
+            if ( @args > 0  &&  ref($args[0]) eq 'HASH' ) { $params = shift @args }
+            $params ||= +{};
+
+            try {
+                my $model_class = __camelize($arg);
+                unless ( $model_class =~ s/^\+// || $model_class =~ /^$class_prefix/ ) {
+                    $model_class = "$class_prefix\::$model_class";
+                }
+                load_class($model_class);
+                $model = $model_class->new(
+                    c => $self,
+                    %$params,
+                );
+            } catch {
+                my $msg = shift;
+                die $msg;
+            };
+
+            if ( $model->can('init') ) {
+                $model->init( %$params );
             }
-            load_class($model_class);
-            $model = $model_class->new(
-                c => $self,
-                %$params,
-            );
-        } catch {
-            my $msg = shift;
-            die $msg;
-        };
 
-        if ( $model->can('init') ) {
-            $model->init( %$params );
+            push @models, $model;
         }
 
-        push @models, $model;
-    }
-
-    return wantarray ? @models : $models[0];
+        return wantarray ? @models : $models[0];
+    };
 }
 
 sub __camelize {
