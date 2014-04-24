@@ -32,6 +32,7 @@ sub _generate_func {
             # ->model( $name => \%params )
             if ( @args > 0  &&  ref($args[0]) eq 'HASH' ) { $params = shift @args }
             $params ||= +{};
+            $params->{name} = $arg  if $config{store_name};
 
             try {
                 my $model_class = __camelize($arg);
