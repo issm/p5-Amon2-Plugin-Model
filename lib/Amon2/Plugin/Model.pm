@@ -81,6 +81,8 @@ Amon2::Plugin::Model - model-class loader plugin for Amon2
   package YourApp;
   use parent 'Amon2';
   __PACKAGE__->load_plugin('Model');
+  # or
+  __PACKAGE__->load_plugin('Model' => $plugin_conf);
   ...
 
   # your model class
@@ -116,6 +118,30 @@ Amon2::Plugin::Model - model-class loader plugin for Amon2
 =head1 DESCRIPTION
 
 Amon2::Plugin::Model is model-class loader plugin for Amon2.
+
+=head1 PLUGIN CONFIG
+
+=over4
+
+=item store_name : Bool
+
+  # your Amon2 application
+  package YourApp;
+  ...
+  __PACKAGE__->load_plugin('Model' => {store_name => 1});
+
+  # your model
+  package YourApp::Model::Foo;
+  sub new {
+    my ($class, %args) = @_;
+    bless \%args, $class;
+  }
+
+  # in your code
+  print $c->model('Foo')->{name};                   # 'Foo'
+  print $c->model('+YourApp::Model::Foo')->{name};  # '+YourApp::Model::Foo'
+
+=back
 
 =head1 AUTHOR
 
